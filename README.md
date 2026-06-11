@@ -6,7 +6,7 @@
 
 ### יצירת קונטיינר של mysql:
 ```
-docker run --name mysql-w7 -e MYSQL_ROOT_PASSWORD=password -p 3306:3306 -d mysql:8
+docker run --name simcha-art -e MYSQL_ROOT_PASSWORD=simcha-2001 -p 3306:3306 -d mysql:8
 ```
 ```text
 library-api/
