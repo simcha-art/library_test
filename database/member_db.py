@@ -29,7 +29,7 @@ class MemberDB:
     def get_member_by_id(self, member_id: int):
         with db.conn.cursor(dictionary=True) as cursor:
             cursor.execute("SELECT * FROM members WHERE id = %s", (member_id,))
-            return cursor.fetchall()[0]
+            return cursor.fetchone()
         
     
     def update_member(self, member_id: int, data: dict):
