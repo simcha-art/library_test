@@ -133,3 +133,35 @@ def borrow_book(book_id: int, member_id: int):
             return e.detail
         raise
 
+@router.put("/{book_id}/return/{member_id}")
+def return_book(book_id: int, member_id: int):
+    """
+    1. בדיקה שהספר קיים
+    2. בדיקה שהחבר קיים
+    3. בדיקה שהחבר שמחזיר את הספר הוא זה ששאל אותו מלכתחילה
+    4. החזרה
+    """
+    try:
+        logger.info(f"start returning book {book_id} by member {member_id}")
+        book = book_manager.get_book_by_id(book_id)
+        if not book:
+            logger.warning(f"book {book_id} not found")
+            raise HTTPException(404, detail=f"book {book_id} not found")
+        
+        if book["borrowed_by_member_id"] != member_id:
+            logger.warning(f"member id does not match the member who borrowed the book")
+            raise HTTPException(400, f"member id does not match the member who borrowed the book")
+        
+        member = member_manager.get_member_by_id(member_id)
+        if not member:
+            logger.warning(f"member {member_id} not found")
+            raise HTTPException(404, detail=f"member {member_id} not found")
+        
+        
+        
+        book_manager.set_available(book_id, True, None)
+        logger.info(f"member {member_id} returned book {book_id} successfully")
+        return f"book {book_id} returned successfully"
+    except HTTPException as e:
+        logger.error(f"failed to return book {book_id}")
+        raise
