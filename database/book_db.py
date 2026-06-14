@@ -6,29 +6,23 @@ class BookDB:
         pass
 
     def create_book(self, data: dict):
-        logger.info("start creating a new book")
         with db.conn.cursor(dictionary=True) as cursor:
-            title = data.get("title")
-            author = data.get("author")
-            genre = data.get("genre")
-            VALID_GENRE = ["Fiction", "Non-Fiction",  "Science", "History", "Other"]
-            if genre not in VALID_GENRE:
-                logger.error(f"could not create the book, genre must be from {VALID_GENRE}")
-                return None
             query = """
             INSERT INTO books
             (title, author, genre)
             VALUES
             (%s, %s, %s)
             """
+
+            title = data.get("title")
+            author = data.get("author")
+            genre = data.get("genre")
             params = [title, author, genre]
+
             cursor.execute(query, params)
             db.conn.commit()
+
             new_id = cursor.lastrowid
-            if not new_id:
-                logger.error("could not create the book")
-                return None
-            logger.info(f"book {new_id} {title} created successfully")
             return new_id
     
 
@@ -44,7 +38,6 @@ class BookDB:
             return books
         
     def get_book_by_id(self, book_id: int):
-        logger.info(f"start getting book by id: {book_id}")
         with db.conn.cursor(dictionary=True) as cursor:
             query = """
             SELECT * FROM books
@@ -53,9 +46,8 @@ class BookDB:
             cursor.execute(query, (book_id,))
             book = cursor.fetchone()
             if not book:
-                logger.error(f"book {book_id} not found")
-                return {"msg": f"book {book_id} not found"}
-            logger.info(f"book {book_id} returned successfully")
+                return None
+            logger.info(f"book {book_id} has found")
             return book
         
     def update_book(self, id: int, data: dict):
