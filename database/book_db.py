@@ -107,17 +107,27 @@ class BookDB:
         
     
     def count_borrowed_books(self):
+        logger.info("start count borrowed books...")
         with db.conn.cursor(dictionary=True) as cursor:
             cursor.execute("SELECT COUNT(*) AS borrowed FROM books WHERE is_available = FALSE")
-            return cursor.fetchall()[0]["borrowed"]
+            result = cursor.fetchone()["borrowed"]
+            if not result:
+                logger.warning("No borrowed books")
+            logger.info("complete count borrowed books")
+            return result
         
-    def count_by_genre(self, genre):
+        
+    def count_by_genre(self):
+        logger.info('start counting books by genres...')
         query = """
-        SELECT COUNT(*) AS total FROM books WHERE genre = %s
+        SELECT genre, COUNT(*) AS COUNT FROM books GROUP BY genre
         """
         with db.conn.cursor(dictionary=True) as cursor:
-            cursor.execute(query, (genre,))
-            return cursor.fetchall()[0]["total"]
+            cursor.execute(query)
+            result = cursor.fetchall()
+            logger.info('complete counting books by genres')
+            return result
+
         
 
     def count_active_borrows_by_member(self, member_id: int):
