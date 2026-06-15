@@ -81,9 +81,16 @@ class MemberDB:
         
 
     def get_top_member(self):
+        logger.info("start getting top member...")
         with db.conn.cursor(dictionary=True) as cursor:
-            cursor.execute("SELECT * FROM members ORDER BY total_borrows DESC LIMIT 1")
-            return cursor.fetchall()
+            logger.info("getting top total_borrows")
+            cursor.execute("SELECT MAX(total_borrows) AS max_borrows FROM members")
+            max_borrows = cursor.fetchone()["max_borrows"]
+            logger.info("getting all members with top total_borrows")
+            cursor.execute(f"SELECT id, total_borrows FROM members WHERE total_borrows = {max_borrows}")
+            result = cursor.fetchall()
+            logger.info("getting top_member complete")
+            return result
 
 
         
