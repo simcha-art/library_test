@@ -25,6 +25,9 @@ class DB:
         cursor.close()
         return conn
 
+    def close(self):
+        logger.info("closing connection")
+        self.conn.close()
 
     def create_tables(self):
         cursor = self.conn.cursor()
